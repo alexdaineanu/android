@@ -2,17 +2,17 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "075ff0106926cff2a58864d30f1401ec",
+    "identityHash": "b97f8c58e38500f7f619878509247dfd",
     "entities": [
       {
         "tableName": "Recipe",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT, `recipe` TEXT, `photo` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT, `name` TEXT, `recipe` TEXT, `email` TEXT, `approved` INTEGER)",
         "fields": [
           {
-            "fieldPath": "uid",
-            "columnName": "uid",
-            "affinity": "INTEGER",
-            "notNull": true
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": false
           },
           {
             "fieldPath": "name",
@@ -27,17 +27,21 @@
             "notNull": false
           },
           {
-            "fieldPath": "photo",
-            "columnName": "photo",
+            "fieldPath": "email",
+            "columnName": "email",
             "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "approved",
+            "columnName": "approved",
+            "affinity": "INTEGER",
             "notNull": false
           }
         ],
         "primaryKey": {
-          "columnNames": [
-            "uid"
-          ],
-          "autoGenerate": true
+          "columnNames": [],
+          "autoGenerate": false
         },
         "indices": [],
         "foreignKeys": []
@@ -45,7 +49,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"075ff0106926cff2a58864d30f1401ec\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"b97f8c58e38500f7f619878509247dfd\")"
     ]
   }
 }

@@ -2,60 +2,55 @@ package daie1895.ubb.ro.foodmanager;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.arch.persistence.room.Room;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import daie1895.ubb.ro.foodmanager.Adapters.CustomAdapter;
-import daie1895.ubb.ro.foodmanager.Database.RecipeDatabase;
+import daie1895.ubb.ro.foodmanager.Adapters.RecipeList;
 import daie1895.ubb.ro.foodmanager.Domain.Recipe;
 
 public class MyRecipesActivity extends AppCompatActivity {
 
-    final Integer MY_RECIPES_ACTIVITY_REQUEST_CODE = 0;
-    final Integer ADD_ACTIVITY_REQUEST_CODE = 1;
-    private List<Recipe> recipes;
-    private ArrayList<Recipe> recipeArrayList = new ArrayList<>();
+    DatabaseReference databaseReference;
     ListView listView;
-    public CustomAdapter adapter;
-    private RecipeDatabase db;
+    List<Recipe> recipes;
+    EditText recipeName;
+    int MY_RECIPES_ACTIVITY_REQUEST_CODE = 1;
+    private FirebaseAuth mAuth;
 
-    @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_recipes);
 
+        mAuth = FirebaseAuth.getInstance();
+        recipes = new ArrayList<Recipe>();
+        databaseReference = FirebaseDatabase.getInstance().getReference("recipes");
         listView = (ListView) findViewById(R.id.recipesListView);
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                db = Room.databaseBuilder(getApplicationContext(),
-                        RecipeDatabase.class, "recipe").build();
-                recipes = db.recipeDao().getAll();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                recipeArrayList.addAll(recipes);
-                adapter = new CustomAdapter(recipeArrayList, getApplicationContext());
-                listView.setAdapter(adapter);
-            }
-        }.execute();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Recipe recipe = recipeArrayList.get(position);
+                Recipe recipe = recipes.get(position);
+                if(!recipe.getEmail().equals(mAuth.getCurrentUser().getEmail())){
+                    Toast.makeText(MyRecipesActivity.this, "That is not your recipe!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Intent intent = new Intent(MyRecipesActivity.this, EditRecipeActivity.class);
                 intent.putExtra("name", recipe.getName());
                 intent.putExtra("recipe", recipe.getRecipe());
@@ -76,56 +71,62 @@ public class MyRecipesActivity extends AppCompatActivity {
                             }
                         });
                 alertDialog.show();
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        Recipe recipe = recipeArrayList.get(position);
-                        db.recipeDao().delete(recipe);
-                        recipes.remove(position);
-                        recipeArrayList.remove(position);
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        adapter.notifyDataSetChanged();
-                    }
-                }.execute();
-
+                Recipe recipe = recipes.get(position);
+                if(recipe.getEmail().equals(mAuth.getCurrentUser().getEmail())) {
+                    databaseReference.child(recipe.getId()).removeValue();
+                }
+                else{
+                    Toast.makeText(MyRecipesActivity.this, "That is not your recipe!", Toast.LENGTH_SHORT).show();
+                }
                 return true;
             }
         });
-
     }
-    @SuppressLint("StaticFieldLeak")
+
     @Override
-    public void onActivityResult(int requestCode, int resultCode, final Intent data){
+    public void onActivityResult(int requestCode, int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == MY_RECIPES_ACTIVITY_REQUEST_CODE)
+        if (requestCode == MY_RECIPES_ACTIVITY_REQUEST_CODE)
             if (resultCode == RESULT_OK) {
                 String name = data.getStringExtra("name");
-                String recipe = data.getStringExtra("recipe");
-                recipes.get(data.getIntExtra("position", 0)).setName(name);
-                recipes.get(data.getIntExtra("position", 0)).setRecipe(recipe);
-                adapter.notifyDataSetChanged();
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        db.recipeDao().updateRecipes(recipes.get(data.getIntExtra("position",0)));
-                        return null;
-                    }
-                }.execute();
+                String content = data.getStringExtra("recipe");
+                Integer position = data.getIntExtra("position", 0);
+                Recipe recipe = recipes.get(position);
+                recipe.setName(name);
+                recipe.setRecipe(content);
+                databaseReference.child(recipe.getId()).setValue(recipe);
             }
-        if(requestCode == ADD_ACTIVITY_REQUEST_CODE)
-            if (resultCode == RESULT_OK){
-                recipeArrayList.add(new Recipe(data.getStringExtra("name"), data.getStringExtra("recipe"), null));
-                recipes.add(new Recipe(data.getStringExtra("name"), data.getStringExtra("recipe"), null));
-                adapter.notifyDataSetChanged();
-        }
     }
 
-    public void createNewRecipe(View view){
+
+    public void createNewRecipe(View view) {
         Intent intent = new Intent(this, AddRecipeActivity.class);
-        startActivityForResult(intent, ADD_ACTIVITY_REQUEST_CODE);
+        startActivity(intent);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                recipes.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Recipe recipe = postSnapshot.getValue(Recipe.class);
+                    if (recipe.getApproved() || recipe.getEmail().equals(mAuth.getCurrentUser().getEmail())) {
+                        recipes.add(recipe);
+                    }
+                }
+
+                RecipeList recipeAdapter = new RecipeList(MyRecipesActivity.this, recipes, databaseReference, recipeName);
+                listView.setAdapter(recipeAdapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

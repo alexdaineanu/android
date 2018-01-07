@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "414338949239",
-    "firebase_url": "https://fir-project-c53a9.firebaseio.com",
-    "project_id": "fir-project-c53a9",
-    "storage_bucket": "fir-project-c53a9.appspot.com"
+    "project_number": "1050792364727",
+    "firebase_url": "https://foodmanager-5102a.firebaseio.com",
+    "project_id": "foodmanager-5102a",
+    "storage_bucket": "foodmanager-5102a.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:414338949239:android:302651cfa88ab517",
+        "mobilesdk_app_id": "1:1050792364727:android:302651cfa88ab517",
         "android_client_info": {
           "package_name": "daie1895.ubb.ro.foodmanager"
         }
       },
       "oauth_client": [
         {
-          "client_id": "414338949239-cb62be5kup3as4kslt7imc6b20mbpk79.apps.googleusercontent.com",
+          "client_id": "1050792364727-scm6cssvm1r4rj550eg70v8eda3cpt5v.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "daie1895.ubb.ro.foodmanager",
@@ -23,13 +23,13 @@
           }
         },
         {
-          "client_id": "414338949239-gi6ua0aicpouhm410b51c9jarhq20jit.apps.googleusercontent.com",
+          "client_id": "1050792364727-l981bdspngukqv789vft1btbsj9nbc85.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAcnd-ZuYgwBOd1Bx1-Zh-QoyzjMyStHM8"
+          "current_key": "AIzaSyDjpdCwUqEUgB3z7QNzL3v5bd8LtGx1eB4"
         }
       ],
       "services": {
@@ -40,7 +40,7 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "414338949239-gi6ua0aicpouhm410b51c9jarhq20jit.apps.googleusercontent.com",
+              "client_id": "1050792364727-l981bdspngukqv789vft1btbsj9nbc85.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

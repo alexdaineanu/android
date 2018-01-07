@@ -1,39 +1,25 @@
 package daie1895.ubb.ro.foodmanager.Domain;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-
 /**
  * Created by adaineanu on 11/6/2017.
  */
 
-@Entity
 public class Recipe {
-    @PrimaryKey(autoGenerate = true)
-    private int uid;
-
-    @ColumnInfo(name = "name")
+    private String id;
     private String name;
-
-    @ColumnInfo(name = "recipe")
     private String recipe;
+    private String email;
+    private Boolean approved;
 
-    @ColumnInfo(name = "photo")
-    private String photo;
-
-    public Recipe(String name, String recipe, String photo) {
+    public Recipe(String id, String name, String recipe, String email, Boolean approved) {
+        this.id = id;
         this.name = name;
         this.recipe = recipe;
-        this.photo = photo;
+        this.email = email;
+        this.approved = approved;
     }
 
-    public int getUid() {
-        return uid;
-    }
-
-    public void setUid(int uid) {
-        this.uid = uid;
+    public Recipe() {
     }
 
     public String getName() {
@@ -52,21 +38,33 @@ public class Recipe {
         this.recipe = recipe;
     }
 
-    public String getPhoto() {
-        return photo;
+    public String getEmail() {
+        return email;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Boolean getApproved() {
+        return approved;
+    }
+
+    public void setApproved(Boolean approved) {
+        this.approved = approved;
     }
 
     @Override
     public String toString() {
         return "Recipe{" +
-                "uid=" + uid +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", recipe='" + recipe + '\'' +
-                ", photo='" + photo + '\'' +
+                ", email='" + email + '\'' +
+                ", approved=" + approved +
                 '}';
+    }
+
+    public String getId() {
+        return id;
     }
 }
