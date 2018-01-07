@@ -42,6 +42,7 @@ public class MyRecipesActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         recipes = new ArrayList<Recipe>();
         databaseReference = FirebaseDatabase.getInstance().getReference("recipes");
+        databaseReference.keepSynced(true);
         listView = (ListView) findViewById(R.id.recipesListView);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

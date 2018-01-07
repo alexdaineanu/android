@@ -39,6 +39,7 @@ public class AdminRecipesActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         recipes = new ArrayList<Recipe>();
         databaseReference = FirebaseDatabase.getInstance().getReference("recipes");
+        databaseReference.keepSynced(true);
         listView = (ListView) findViewById(R.id.listViewRecipesAdmin);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
